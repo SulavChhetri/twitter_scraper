@@ -2,7 +2,6 @@ from genericpath import isfile
 from pathlib import Path
 import os
 import json
-import csv
 import requests
 
 ROOT_DIR = Path(__file__).parent.parent
@@ -40,17 +39,17 @@ def extract_data(guest_token_number,username):
     except:
         guest_token_update()
         guest_token_number = read_token_number()
-        scrape_and_insert(guest_token_number,username)
+        extract_data(guest_token_number,username)
 
-def scrape_and_insert(guest_token_number,username):
-    main_dict = extract_data(guest_token_number,username)
-    if main_dict:
-        scrape_into_csv(main_dict)
+# def scrape_and_insert(guest_token_number,username):
+#     main_dict = extract_data(guest_token_number,username)
+#     if main_dict:
+#         scrape_into_csv(main_dict)
    
 
-def scrape_into_csv(mainlist):
-    with open(os.path.join(file_path,'profile_data.json'),'a',encoding="utf-8") as file:
-        json.dump(mainlist,file)
+# def scrape_into_csv(mainlist):
+#     with open(os.path.join(file_path,'profile_data.json'),'a',encoding="utf-8") as file:
+#         json.dump(mainlist,file)
 
 def read_token_number():
     if os.path.isfile(os.path.join(file_path,'tokennumber.txt')):
@@ -58,10 +57,10 @@ def read_token_number():
             return file.read()
     else:
         return ''
-        
+
 def main(username):
     guest_token_number = read_token_number()
-    scrape_and_insert(guest_token_number,username)
+    extract_data(guest_token_number,username)
 
 
 # main('xulav12345')

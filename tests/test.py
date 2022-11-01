@@ -37,21 +37,21 @@ def test_extract_data():
     assert extract_data(guest_token_number,'xulav12345')['name']=='Xulav'
     assert extract_data(guest_token_number,'chiddyafc')['screen_name']=='chiddyafc'
 
-def test_scrape_and_insert():
-    guest_token_number = read_token_number()
-    json_file_path = os.path.join(file_path,'profile_data.json')
-    filedeleter(json_file_path)
-    scrape_and_insert(guest_token_number,'xulav12345')
-    assert file_data_checker(json_file_path)== True
+# def test_scrape_and_insert():
+#     guest_token_number = read_token_number()
+#     json_file_path = os.path.join(file_path,'profile_data.json')
+#     filedeleter(json_file_path)
+#     scrape_and_insert(guest_token_number,'xulav12345')
+#     assert file_data_checker(json_file_path)== True
 
-def test_scrape_into_csv():
-    json_file_path = os.path.join(file_path,'profile_data.json')
-    filedeleter(json_file_path)
+# def test_scrape_into_csv():
+#     json_file_path = os.path.join(file_path,'profile_data.json')
+#     filedeleter(json_file_path)
 
-    guest_token_number = read_token_number()
-    mainlist = extract_data(guest_token_number,'xulav12345')
-    scrape_into_csv(mainlist)
-    assert file_data_checker(json_file_path)== True
+#     guest_token_number = read_token_number()
+#     mainlist = extract_data(guest_token_number,'xulav12345')
+#     scrape_into_csv(mainlist)
+#     assert file_data_checker(json_file_path)== True
 
 # def test_read_token_number():
 
