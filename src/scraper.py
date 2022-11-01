@@ -40,7 +40,7 @@ def extract_data(guest_token_number,username):
         birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
     except:
         birthdate = None
-        return [name,user_name,None if location=='' else location,birthdate]
+    return [name,user_name,None if location=='' else location,birthdate]
 
 def scrape_and_insert(guest_token_number,username):
     mainlist = extract_data(guest_token_number,username)
@@ -64,6 +64,7 @@ def main(username):
     try:
         scrape_and_insert(guest_token_number,username)
     except:
+        print("not there")
         guest_token_update()
         guest_token_number = read_token_number()
         scrape_and_insert(guest_token_number,username)
