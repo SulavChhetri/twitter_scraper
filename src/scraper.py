@@ -29,9 +29,17 @@ def extract_data(guest_token_number,username):
         'x-csrf-token': '42ad35cb76f583318cf67ccf0adae6bb',
         'x-guest-token': guest_token_number,
     }
+
+    response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
     try:
-        response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
         jsonresponse = json.loads(response)
+    except KeyError:
+        return []
+    except:
+        guest_token_update()
+        guest_token_number = read_token_number()
+        scrape_and_insert(guest_token_number,username)
+    else:
         data = jsonresponse['data']['user']['result']['legacy']
         user_name = data['screen_name']
         name =data['name']
@@ -42,10 +50,6 @@ def extract_data(guest_token_number,username):
         except:
             birthdate = None
         return [name,user_name,None if location=='' else location,birthdate]
-    except:
-        guest_token_update()
-        guest_token_number = read_token_number()
-        scrape_and_insert(guest_token_number,username)
 
 def scrape_and_insert(guest_token_number,username):
     mainlist = extract_data(guest_token_number,username)
@@ -69,4 +73,5 @@ def main(username):
     scrape_and_insert(guest_token_number,username)
 
 
-main('xulav12345')
+# main('xulav12345')
+print(extract_data('1587418280075350017','xulav12345lklsadsdsad'))
