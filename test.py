@@ -10,7 +10,7 @@ def guest_token():
     return json.loads(response)['guest_token']
 
 params = {
-        'variables': '{"screen_name":"xulav12345","withSafetyModeUserFields":true,"withSuperFollowsUserFields":true}',
+        'variables': '{"screen_name":"chiddyafc","withSafetyModeUserFields":true,"withSuperFollowsUserFields":true}',
         'features': '{"verified_phone_label_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
     }
 
@@ -23,14 +23,20 @@ def main():
     response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=params,headers=headers).text
     jsonresponse = json.loads(response)
     data = jsonresponse['data']['user']['result']['legacy']
-    birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
-    birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
+    try:
+        birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
+        birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
+        print(birthdate)
+    except Exception as e:
+        print(e)
     user_name = data['screen_name']
     name =data['name']
     location = data['location']
-    print(birthdate)
+
     # with open(os.path.join(file_path,'profile_data.csv'),'a',encoding="utf-8") as file:
     #     writer = csv.writer(file)
     #     if file.tell()==0:
     #         writer.writerow(["Name","Username","Location","Date of Birth"])
     #     writer.writerow([name,user_name,location])
+
+main()

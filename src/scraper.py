@@ -20,17 +20,12 @@ def guest_token():
 
 def param_variable(username):
     params = {
-        'variables': '{"screen_name":"xulav12345","withSafetyModeUserFields":true,"withSuperFollowsUserFields":true}',
+        'variables': {"screen_name":"xulav12345","withSafetyModeUserFields":True,"withSuperFollowsUserFields":True},
         'features': '{"verified_phone_label_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
     }
-
-    username_variable = params['variables'].split('"')
-    username_variable[3]=username
-    params['variables'] = '"'.join(username_variable)
-    # params_variable = json.loads(params['variables'])
-    # params_variable['screen_name'] = username
-    # params_variable = json.dumps(params_variable)
-    # params['variables']= params_variable
+    data = params['variables']
+    data['screen_name'] = username
+    params['variables'] = json.dumps(data)
     return params
 
 def main(namelist):
