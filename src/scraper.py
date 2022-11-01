@@ -64,7 +64,6 @@ def main(username):
     try:
         scrape_and_insert(guest_token_number,username)
     except:
-        print("not there")
         guest_token_update()
         guest_token_number = read_token_number()
         scrape_and_insert(guest_token_number,username)
