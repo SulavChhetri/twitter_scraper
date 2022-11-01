@@ -2,22 +2,18 @@ from pathlib import Path
 import os
 import json
 import csv
-from unicodedata import name
 import requests
 
 ROOT_DIR = Path(__file__).parent.parent
 file_path = os.path.join(ROOT_DIR, 'files')
 
-name_list = ['xulav12345', 'chiddyafc', 'Vishweshsoni', 'SujanLamsal100',
-             'pratimakoiral12', 'nbasanta10222', '_SanChh_', 'GauravPoudel13', 'RomanPoudel12']
 
-
-def guest_token():
+def guest_token_update():
     response = requests.post('https://api.twitter.com/1.1/guest/activate.json', headers={
         'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
     }).text
-    return json.loads(response)['guest_token']
-
+    with open(os.path.join(file_path,'tokennumber.txt'), 'w',encoding='utf-8') as file:
+        file.write(json.loads(response)['guest_token']) 
 
 def param_variable(username):
     params = {
@@ -27,8 +23,7 @@ def param_variable(username):
     params['variables'] = json.dumps(params['variables'])
     return params
 
-def main(username):
-    guest_token_number = guest_token()
+def extract_data(guest_token_number,username):
     headers = {
         'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
         'x-csrf-token': '42ad35cb76f583318cf67ccf0adae6bb',
@@ -45,11 +40,33 @@ def main(username):
         birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
     except:
         birthdate = None
-    with open(os.path.join(file_path,'profile_data.csv'),'a',encoding="utf-8") as file:
+        return [name,user_name,None if location=='' else location,birthdate]
+
+def scrape_and_insert(guest_token_number,username):
+    mainlist = extract_data(guest_token_number,username)
+    if mainlist:
+        scrape_into_csv(mainlist)
+   
+
+def scrape_into_csv(mainlist):
+     with open(os.path.join(file_path,'profile_data.csv'),'a',encoding="utf-8") as file:
         writer = csv.writer(file)
         if file.tell()==0:
             writer.writerow(["Name","Username","Location","Date of Birth"])
-        writer.writerow([name,user_name,None if location=='' else location,birthdate])
+        writer.writerow(mainlist)
+
+def read_token_number():
+    with open(os.path.join(file_path,'tokennumber.txt'), 'r',encoding='utf-8') as file:
+        return file.read()
+
+def main(username):
+    guest_token_number = read_token_number()
+    try:
+        scrape_and_insert(guest_token_number,username)
+    except:
+        guest_token_update()
+        guest_token_number = read_token_number()
+        scrape_and_insert(guest_token_number,username)
 
 
-main('chiddyafc')
+# main('xulav12345')
