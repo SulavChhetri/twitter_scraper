@@ -29,27 +29,27 @@ def extract_data(guest_token_number,username):
         'x-csrf-token': '42ad35cb76f583318cf67ccf0adae6bb',
         'x-guest-token': guest_token_number,
     }
-
-    response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
     try:
+        response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
         jsonresponse = json.loads(response)
-    except KeyError:
-        return []
+        data = jsonresponse['data']
+        try:
+            data= data['user']['result']['legacy']
+            user_name = data['screen_name']
+            name =data['name']
+            location = data['location']
+            try:
+                birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
+                birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
+            except:
+                birthdate = None
+            return [name,user_name,None if location=='' else location,birthdate]
+        except KeyError:
+            return []
     except:
         guest_token_update()
         guest_token_number = read_token_number()
         scrape_and_insert(guest_token_number,username)
-    else:
-        data = jsonresponse['data']['user']['result']['legacy']
-        user_name = data['screen_name']
-        name =data['name']
-        location = data['location']
-        try:
-            birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
-            birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
-        except:
-            birthdate = None
-        return [name,user_name,None if location=='' else location,birthdate]
 
 def scrape_and_insert(guest_token_number,username):
     mainlist = extract_data(guest_token_number,username)
