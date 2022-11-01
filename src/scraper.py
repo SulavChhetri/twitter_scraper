@@ -1,3 +1,4 @@
+from genericpath import isfile
 from pathlib import Path
 import os
 import json
@@ -33,45 +34,34 @@ def extract_data(guest_token_number,username):
         response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
         jsonresponse = json.loads(response)
         data = jsonresponse['data']
-        try:
-            data= data['user']['result']['legacy']
-            user_name = data['screen_name']
-            name =data['name']
-            location = data['location']
-            try:
-                birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
-                birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
-            except:
-                birthdate = None
-            return [name,user_name,None if location=='' else location,birthdate]
-        except KeyError:
-            return []
+        if 'user' not in data.keys():
+            return None
+        return data['user']['result']['legacy']
     except:
         guest_token_update()
         guest_token_number = read_token_number()
         scrape_and_insert(guest_token_number,username)
 
 def scrape_and_insert(guest_token_number,username):
-    mainlist = extract_data(guest_token_number,username)
-    if mainlist:
-        scrape_into_csv(mainlist)
+    main_dict = extract_data(guest_token_number,username)
+    if main_dict:
+        scrape_into_csv(main_dict)
    
 
 def scrape_into_csv(mainlist):
-     with open(os.path.join(file_path,'profile_data.csv'),'a',encoding="utf-8") as file:
-        writer = csv.writer(file)
-        if file.tell()==0:
-            writer.writerow(["Name","Username","Location","Date of Birth"])
-        writer.writerow(mainlist)
+    with open(os.path.join(file_path,'profile_data.json'),'a',encoding="utf-8") as file:
+        json.dump(mainlist,file)
 
 def read_token_number():
-    with open(os.path.join(file_path,'tokennumber.txt'), 'r',encoding='utf-8') as file:
-        return file.read()
-
+    if os.path.isfile(os.path.join(file_path,'tokennumber.txt')):
+        with open(os.path.join(file_path,'tokennumber.txt'), 'r',encoding='utf-8') as file:
+            return file.read()
+    else:
+        return ''
+        
 def main(username):
     guest_token_number = read_token_number()
     scrape_and_insert(guest_token_number,username)
 
 
 # main('xulav12345')
-print(extract_data('1587418280075350017','xulav12345lklsadsdsad'))
