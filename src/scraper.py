@@ -23,25 +23,29 @@ def param_variable(username):
         'variables': '{"screen_name":"xulav12345","withSafetyModeUserFields":true,"withSuperFollowsUserFields":true}',
         'features': '{"verified_phone_label_enabled":false,"responsive_web_graphql_timeline_navigation_enabled":true}',
     }
-    params_variable = json.loads(params['variables'])
-    params_variable['screen_name'] = username
-    params_variable = json.dumps(params_variable)
-    params['variables']= params_variable
+
+    username_variable = params['variables'].split('"')
+    username_variable[3]=username
+    params['variables'] = '"'.join(username_variable)
+    # params_variable = json.loads(params['variables'])
+    # params_variable['screen_name'] = username
+    # params_variable = json.dumps(params_variable)
+    # params['variables']= params_variable
     return params
 
 def main(namelist):
+    guest_token = guest_token()
     headers = {
         'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
         'x-csrf-token': '42ad35cb76f583318cf67ccf0adae6bb',
-        'x-guest-token': guest_token(),
+        'x-guest-token': guest_token,
     }
-
     for username in namelist:
         response = requests.get('https://twitter.com/i/api/graphql/HThKoC4xtXHcuMIok4O0HA/UserByScreenName', params=param_variable(username),headers=headers).text
         jsonresponse = json.loads(response)
         data = jsonresponse['data']['user']['result']['legacy']
-        # birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
-        # birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
+        birth_date_dict = jsonresponse['data']['user']['result']['legacy_extended_profile']['birthdate']
+        birthdate = str(birth_date_dict['year'])+'-'+str(birth_date_dict['month'])+'-'+str(birth_date_dict['day'])
         user_name = data['screen_name']
         name =data['name']
         location = data['location']
@@ -52,4 +56,5 @@ def main(namelist):
             writer.writerow([name,user_name,location])
 
 
-main(name_list)
+# main(name_list)
+print(param_variable('chiddyafc'))
